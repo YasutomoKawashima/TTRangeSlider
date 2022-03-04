@@ -309,24 +309,28 @@ static const CGFloat kLabelsFontSize = 12.0f;
     if (self.hideLabels || [self.numberFormatterOverride isEqual:[NSNull null]]){
         self.minLabel.string = @"";
         self.maxLabel.string = @"";
+    } else {
+        NSNumberFormatter *formatter = (self.numberFormatterOverride != nil) ? self.numberFormatterOverride : self.decimalNumberFormatter;
+        
+        self.minLabel.string = [formatter stringFromNumber:@(self.selectedMinimum)];
+        self.maxLabel.string = [formatter stringFromNumber:@(self.selectedMaximum)];
+        
+        self.minLabelTextSize = [self.minLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minLabelFont}];
+        self.maxLabelTextSize = [self.maxLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxLabelFont}];
+    }
+    
+    if (self.hideValueLabels || [self.numberFormatterOverride isEqual:[NSNull null]]){
         self.minValueLabel.string = @"";
         self.maxValueLabel.string = @"";
-        return;
+    } else {
+        NSNumberFormatter *formatter = (self.numberFormatterOverride != nil) ? self.numberFormatterOverride : self.decimalNumberFormatter;
+        
+        self.minValueLabel.string = [formatter stringFromNumber:@(self.minValue)];
+        self.maxValueLabel.string = [formatter stringFromNumber:@(self.maxValue)];
+        
+        self.minValueLabelTextSize = [self.minValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minValueLabelFont}];
+        self.maxValueLabelTextSize = [self.maxValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxValueLabelFont}];
     }
-
-    NSNumberFormatter *formatter = (self.numberFormatterOverride != nil) ? self.numberFormatterOverride : self.decimalNumberFormatter;
-
-    self.minLabel.string = [formatter stringFromNumber:@(self.selectedMinimum)];
-    self.maxLabel.string = [formatter stringFromNumber:@(self.selectedMaximum)];
-    
-    self.minValueLabel.string = [formatter stringFromNumber:@(self.minValue)];
-    self.maxValueLabel.string = [formatter stringFromNumber:@(self.maxValue)];
-    
-    self.minLabelTextSize = [self.minLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minLabelFont}];
-    self.maxLabelTextSize = [self.maxLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxLabelFont}];
-
-    self.minValueLabelTextSize = [self.minValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minValueLabelFont}];
-    self.maxValueLabelTextSize = [self.maxValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxValueLabelFont}];
 }
 
 - (void)updateAccessibilityElements {

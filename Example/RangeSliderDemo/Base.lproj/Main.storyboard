@@ -66,6 +66,9 @@
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="EYa-1H-cea"/>
                                     <constraint firstAttribute="height" constant="60" id="Nk9-gu-lme"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="hideValueLabels" value="YES"/>
+                                </userDefinedRuntimeAttributes>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="EYa-1H-cea"/>
