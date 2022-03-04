@@ -24,6 +24,12 @@ const float TEXT_HEIGHT = 14;
 @property (nonatomic, assign) CGSize minLabelTextSize;
 @property (nonatomic, assign) CGSize maxLabelTextSize;
 
+@property (nonatomic, strong) CATextLayer *minValueLabel;
+@property (nonatomic, strong) CATextLayer *maxValueLabel;
+
+@property (nonatomic, assign) CGSize minValueLabelTextSize;
+@property (nonatomic, assign) CGSize maxValueLabelTextSize;
+
 @property (nonatomic, strong) NSNumberFormatter *decimalNumberFormatter; // Used to format values if formatType is YLRangeSliderFormatTypeDecimal
 
 // strong reference needed for UIAccessibilityContainer
@@ -139,6 +145,34 @@ static const CGFloat kLabelsFontSize = 12.0f;
     self.maxLabelFont = [UIFont systemFontOfSize:kLabelsFontSize];
     [self.layer addSublayer:self.maxLabel];
 
+    //draw the text labels
+    self.minValueLabel = [[CATextLayer alloc] init];
+    self.minValueLabel.alignmentMode = kCAAlignmentCenter;
+    self.minValueLabel.fontSize = kLabelsFontSize;
+    self.minValueLabel.frame = CGRectMake(0, 0, 75, TEXT_HEIGHT);
+    self.minValueLabel.contentsScale = [UIScreen mainScreen].scale;
+    self.minValueLabel.contentsScale = [UIScreen mainScreen].scale;
+    if (self.minValueLabelColour == nil){
+        self.minValueLabel.foregroundColor = self.tintColor.CGColor;
+    } else {
+        self.minValueLabel.foregroundColor = self.minValueLabelColour.CGColor;
+    }
+    self.minValueLabelFont = [UIFont systemFontOfSize:kLabelsFontSize];
+    [self.layer addSublayer:self.minValueLabel];
+
+    self.maxValueLabel = [[CATextLayer alloc] init];
+    self.maxValueLabel.alignmentMode = kCAAlignmentCenter;
+    self.maxValueLabel.fontSize = kLabelsFontSize;
+    self.maxValueLabel.frame = CGRectMake(0, 0, 75, TEXT_HEIGHT);
+    self.maxValueLabel.contentsScale = [UIScreen mainScreen].scale;
+    if (self.maxValueLabelColour == nil){
+        self.maxValueLabel.foregroundColor = self.tintColor.CGColor;
+    } else {
+        self.maxValueLabel.foregroundColor = self.maxValueLabelColour.CGColor;
+    }
+    self.maxValueLabelFont = [UIFont systemFontOfSize:kLabelsFontSize];
+    [self.layer addSublayer:self.maxValueLabel];
+    
     // TODO Create a bundle that allows localization of default accessibility labels and hints
     if (!self.minLabelAccessibilityLabel || self.minLabelAccessibilityLabel.length == 0) {
       self.minLabelAccessibilityLabel = @"Left Handle";
@@ -232,6 +266,14 @@ static const CGFloat kLabelsFontSize = 12.0f;
     if (self.maxLabelColour == nil){
         self.maxLabel.foregroundColor = color;
     }
+    
+    if (self.minValueLabelColour == nil){
+        self.minValueLabel.foregroundColor = color;
+    }
+    if (self.maxValueLabelColour == nil){
+        self.maxValueLabel.foregroundColor = color;
+    }
+    
     [CATransaction commit];
 }
 
@@ -267,6 +309,8 @@ static const CGFloat kLabelsFontSize = 12.0f;
     if (self.hideLabels || [self.numberFormatterOverride isEqual:[NSNull null]]){
         self.minLabel.string = @"";
         self.maxLabel.string = @"";
+        self.minValueLabel.string = @"";
+        self.maxValueLabel.string = @"";
         return;
     }
 
@@ -275,8 +319,14 @@ static const CGFloat kLabelsFontSize = 12.0f;
     self.minLabel.string = [formatter stringFromNumber:@(self.selectedMinimum)];
     self.maxLabel.string = [formatter stringFromNumber:@(self.selectedMaximum)];
     
+    self.minValueLabel.string = [formatter stringFromNumber:@(self.minValue)];
+    self.maxValueLabel.string = [formatter stringFromNumber:@(self.maxValue)];
+    
     self.minLabelTextSize = [self.minLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minLabelFont}];
     self.maxLabelTextSize = [self.maxLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxLabelFont}];
+
+    self.minValueLabelTextSize = [self.minValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.minValueLabelFont}];
+    self.maxValueLabelTextSize = [self.maxValueLabel.string sizeWithAttributes:@{NSFontAttributeName:self.maxValueLabelFont}];
 }
 
 - (void)updateAccessibilityElements {
@@ -311,7 +361,6 @@ static const CGFloat kLabelsFontSize = 12.0f;
     CGSize minLabelTextSize = self.minLabelTextSize;
     CGSize maxLabelTextSize = self.maxLabelTextSize;
     
-    
     self.minLabel.frame = CGRectMake(0, 0, minLabelTextSize.width, minLabelTextSize.height);
     self.maxLabel.frame = CGRectMake(0, 0, maxLabelTextSize.width, maxLabelTextSize.height);
 
@@ -335,6 +384,23 @@ static const CGFloat kLabelsFontSize = 12.0f;
             self.minLabel.position = CGPointMake(leftHandleCentre.x, self.minLabel.position.y);
             self.maxLabel.position = CGPointMake(leftHandleCentre.x + self.minLabel.frame.size.width/2 + minSpacingBetweenLabels + self.maxLabel.frame.size.width/2, self.maxLabel.position.y);
         }
+    }
+    
+    {
+        CGPoint leftHandleCenter = CGPointMake([self getXPositionAlongLineForValue:self.minValue], CGRectGetMidY(self.sliderLine.frame));
+        CGPoint rightHandleCenter = CGPointMake([self getXPositionAlongLineForValue:self.maxValue], CGRectGetMidY(self.sliderLine.frame));
+        
+        CGPoint newMinLabelCenter = CGPointMake(leftHandleCenter.x, (self.leftHandle.frame.origin.y + (self.leftHandle.frame.size.height/2)) + ((self.labelPosition == LabelPositionAbove ? 1 : -1) * ((self.minLabel.frame.size.height/2) + padding + (self.leftHandle.frame.size.height/2))));
+        CGPoint newMaxLabelCenter = CGPointMake(rightHandleCenter.x, (self.rightHandle.frame.origin.y + (self.rightHandle.frame.size.height/2)) + ((self.labelPosition == LabelPositionAbove ? 1 : -1) * ((self.maxLabel.frame.size.height/2) + padding + (self.rightHandle.frame.size.height/2))));
+        
+        CGSize minValueLabelTextSize = self.minValueLabelTextSize;
+        CGSize maxValueLabelTextSize = self.maxValueLabelTextSize;
+        
+        self.minValueLabel.frame = CGRectMake(0, 0, minValueLabelTextSize.width, minValueLabelTextSize.height);
+        self.maxValueLabel.frame = CGRectMake(0, 0, maxValueLabelTextSize.width, maxValueLabelTextSize.height);
+        
+        self.minValueLabel.position = newMinLabelCenter;
+        self.maxValueLabel.position = newMaxLabelCenter;
     }
 }
 
@@ -555,6 +621,14 @@ static const CGFloat kLabelsFontSize = 12.0f;
     if (self.maxLabelColour == nil){
         self.maxLabel.foregroundColor = color;
     }
+    
+    if (self.minValueLabelColour == nil){
+        self.minValueLabel.foregroundColor = color;
+    }
+    if (self.maxValueLabelColour == nil){
+        self.maxValueLabel.foregroundColor = color;
+    }
+    
     [CATransaction commit];
 }
 
@@ -616,6 +690,16 @@ static const CGFloat kLabelsFontSize = 12.0f;
     self.maxLabel.foregroundColor = _maxLabelColour.CGColor;
 }
 
+-(void)setMinValueLabelColour:(UIColor *)minValueLabelColour{
+    _minValueLabelColour = minValueLabelColour;
+    self.minValueLabel.foregroundColor = _minValueLabelColour.CGColor;
+}
+
+-(void)setMaxValueLabelColour:(UIColor *)maxValueLabelColour{
+    _maxValueLabelColour = maxValueLabelColour;
+    self.maxValueLabel.foregroundColor = _maxValueLabelColour.CGColor;
+}
+
 -(void)setMinHandleColor:(UIColor *)minHandleColor{
     _minHandleColor = minHandleColor;
     self.leftHandle.backgroundColor = _minHandleColor.CGColor;
@@ -636,6 +720,18 @@ static const CGFloat kLabelsFontSize = 12.0f;
     _maxLabelFont = maxLabelFont;
     self.maxLabel.font = (__bridge CFTypeRef)_maxLabelFont;
     self.maxLabel.fontSize = _maxLabelFont.pointSize;
+}
+
+-(void)setMinValueLabelFont:(UIFont *)minValueLabelFont{
+    _minValueLabelFont = minValueLabelFont;
+    self.minValueLabel.font = (__bridge CFTypeRef)_minValueLabelFont;
+    self.minValueLabel.fontSize = _minValueLabelFont.pointSize;
+}
+
+-(void)setMaxValueLabelFont:(UIFont *)maxValueLabelFont{
+    _maxValueLabelFont = maxValueLabelFont;
+    self.maxValueLabel.font = (__bridge CFTypeRef)_maxValueLabelFont;
+    self.maxValueLabel.fontSize = _maxValueLabelFont.pointSize;
 }
 
 -(void)setNumberFormatterOverride:(NSNumberFormatter *)numberFormatterOverride{

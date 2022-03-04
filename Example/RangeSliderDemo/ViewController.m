@@ -30,6 +30,9 @@
     self.rangeSlider.selectedMinimum = 50;
     self.rangeSlider.selectedMaximum = 150;
     
+    self.rangeSlider.minValueLabelFont = [UIFont systemFontOfSize:18];
+    self.rangeSlider.maxValueLabelFont = [UIFont systemFontOfSize:18];
+    
     self.rangeSlider.shadowRadius = 2;
     self.rangeSlider.shadowOpacity = 0.75;
     

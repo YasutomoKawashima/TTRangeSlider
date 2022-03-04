@@ -59,6 +59,16 @@ IB_DESIGNABLE
 @property (nonatomic, strong) IBInspectable UIColor *maxLabelColour;
 
 /**
+ * The color of the minimum value text label. If not set, the default is the tintColor.
+ */
+@property (nonatomic, strong) IBInspectable UIColor *minValueLabelColour;
+
+/**
+ * The color of the maximum value text label. If not set, the default is the tintColor.
+ */
+@property (nonatomic, strong) IBInspectable UIColor *maxValueLabelColour;
+
+/**
  * The color of both handles. If not set, the default is the tintColor.
  */
 @property (nonatomic, strong) IBInspectable UIColor *handleColor;
@@ -82,6 +92,16 @@ IB_DESIGNABLE
  * The font of the maximum value text label. If not set, the default is system font size 12.
  */
 @property (nonatomic, strong) IBInspectable UIFont *maxLabelFont;
+
+/**
+ * The font of the minimum value text label. If not set, the default is system font size 12.
+ */
+@property (nonatomic, strong) IBInspectable UIFont *minValueLabelFont;
+
+/**
+ * The font of the maximum value text label. If not set, the default is system font size 12.
+ */
+@property (nonatomic, strong) IBInspectable UIFont *maxValueLabelFont;
 
 /**
  * The label displayed in accessibility mode for minimum value handler
