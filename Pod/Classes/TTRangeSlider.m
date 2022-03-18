@@ -5,7 +5,7 @@
 
 #import "TTRangeSlider.h"
 
-const int HANDLE_TOUCH_AREA_EXPANSION = -30; //expand the touch area of the handle by this much (negative values increase size) so that you don't have to touch right on the handle to activate it.
+const int HANDLE_TOUCH_AREA_EXPANSION = -45; //expand the touch area of the handle by this much (negative values increase size) so that you don't have to touch right on the handle to activate it.
 const float TEXT_HEIGHT = 14;
 
 @interface TTRangeSlider ()
